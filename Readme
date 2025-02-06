@@ -1,0 +1,10 @@
+Docker version check : 
+-->docker --version
+-->docker -v
+
+Docker build image :
+-->docker build -t python-idmb .
+
+
+run docker container : 
+-->docker run python-idmb
