@@ -1,10 +1,52 @@
+help :
+-->docker run --help
+-->docker --help
+-->docker ps --help
+-->docker ps [options]
+
 Docker version check : 
 -->docker --version
 -->docker -v
 
-Docker build image :
+interactive session :  interactive mode plus terminal mode 
+-->docker run -it $image_id
+
+Docker build image : attached mode
 -->docker build -t python-idmb .
+-->docker build .
 
+restart docker container : detached mode  
+-->docker start $name
+-->docker start -a -i $container_name
 
-run docker container : 
+run docker container :  build container 
 -->docker run python-idmb
+-->docker run $id
+
+build an docker pre-built image through docker hub 
+-->dokcer run node
+
+
+build a interactive command shell through image 
+-->docker run -it node
+
+stop container : 
+-->docker stop $name
+
+to check all containers : 
+-->docker ps -a
+-->docker ps
+
+to expose the local host and to connect with internal docekr host 
+-->docker run -p 3000:80  $image_id
+
+to make the cotnainer in detached mode 
+-->docker run -p 3000:80 -d $image_id 
+
+to add attached mode  the docker
+-->docker attach $conatiner_id
+
+
+logs of the container : 
+-->docker logs $container_id  [detached mode]
+-->docker logs -f $container_id [attached mode]  
