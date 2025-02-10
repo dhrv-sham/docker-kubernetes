@@ -1,3 +1,13 @@
+colima :
+--> colima start
+--> colima stop
+
+
+docker auth : 
+--> docker login 
+--> docker logout
+--> docker login -u $username
+
 help :
 -->docker run --help
 -->docker --help
@@ -34,8 +44,13 @@ stop container :
 -->docker stop $name
 
 to check all containers : 
--->docker ps -a
--->docker ps
+-->docker ps -a (all container)
+-->docker ps (check running container)
+
+to remove the container you need to stop first of all a container 
+--> docker stop $name
+--> docker rm $name
+
 
 to expose the local host and to connect with internal docekr host 
 -->docker run -p 3000:80  $image_id
@@ -50,3 +65,49 @@ to add attached mode  the docker
 logs of the container : 
 -->docker logs $container_id  [detached mode]
 -->docker logs -f $container_id [attached mode]  
+
+
+docker images all
+--> docker images
+
+
+remove docker images all ways remember to delete the docker container of that image should be deleted no matter running 
+--> docker rmi [$id] 
+--> docker image prune (remove all the docker images )
+
+
+docker delete container auto when execution got over 
+--> docker run -p 3000:80 --rm -d $image_id
+
+
+docker isnpect image :
+--> docker image inspect $id
+
+
+copy into container : 
+--> docker cp dummy/. nice_hermann/test
+--> docker cp folder_name/. $name_conainer:/container_path 
+
+
+copy from container :
+--> docker cp  nice_hermann:/test/. dummy
+
+
+rename and tagging container : 
+--> docker run -p 4000:50  -d --name  $name $id
+
+rename and tagging image : 
+***this v1 is usually used in docker file FROM server-side:v1s***
+--> docker build -t server-side:v1 .
+
+
+
+To rename and retag an existing image:
+--> docker tag server-side:v1 hrvsharma/server-side-hello-node:v2
+
+sharing images and containers :
+***Everyone who has images can run containers***
+***Either share docker file or image to run ***
+<!-- docker hub and private registry -->
+-->docker push dhrvsharma/server-side-hello-node:v2
+-->docker pull $name
