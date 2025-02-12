@@ -25,6 +25,11 @@ Docker build image : attached mode
 -->docker build -t python-idmb .
 -->docker build .
 
+
+running docker image with tag and container name
+-> docker run  - d -p 3000:80 --rm --name $container-name imge-name:tag 
+
+
 restart docker container : detached mode  
 -->docker start $name
 -->docker start -a -i $container_name
@@ -80,7 +85,7 @@ docker delete container auto when execution got over
 --> docker run -p 3000:80 --rm -d $image_id
 
 
-docker isnpect image :
+docker inspect image :
 --> docker image inspect $id
 
 
@@ -111,3 +116,10 @@ sharing images and containers :
 <!-- docker hub and private registry -->
 -->docker push dhrvsharma/server-side-hello-node:v2
 -->docker pull $name
+
+
+docker using the named volumes : 
+<!-- The -v feedback:/app/feedback option is used to create a named volume called feedback and mount it to the /app/feedback directory inside the container. -->
+-> docker run -p 3000:80 -d --name  $name -v :$dir $image-name:tag
+<!--docker run -p 3000:80 -d --name  feedback-app -v feedback:/app/feedback feedback-node:vol  -->
+
