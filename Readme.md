@@ -1,6 +1,6 @@
 colima :
 --> colima start
---> colima stop
+--> colima stop 
 
 
 docker auth : 
@@ -122,4 +122,23 @@ docker using the named volumes :
 <!-- The -v feedback:/app/feedback option is used to create a named volume called feedback and mount it to the /app/feedback directory inside the container. -->
 -> docker run -p 3000:80 -d --name  $name -v :$dir $image-name:tag
 <!--docker run -p 3000:80 -d --name  feedback-app -v feedback:/app/feedback feedback-node:vol  -->
+
+
+
+bind mounts auto updates the container when changes are done in the hard code : 
+<!-- binding our current directory into the /app -->
+-> docker run -d -p 3000:80 --rm --name feedback-app -v feedback:/app/feedback -v "/Users/dhruv/Desktop/docker/data-volumes-01-starting-setup/":/app feedback-node:vol
+
+
+<!-- this will works as /app is overwritten by host local files trhough volumes that we create an anonymous volume   -->
+<!-- backend changes are relfected by nodemon in container  -->
+->docker run -d -p 3000:80 --name feedback-app -v feedback:/app/feedback -v "/Users/dhruv/Desktop/docker/data-volumes-01-starting-setup":/app -v /app/node_modules feedback-node:vol 
+<!-- short cut for the path -->
+macOS / Linux: -v $(pwd):/app
+
+
+<!-- docker volumes  -->
+anonymous volumes : docker run -v/app/data used to save from the overwritten data
+named volumes : docker run -v data:/app/data
+bind mount : docker run -v /path/to/code:/app/code
 
