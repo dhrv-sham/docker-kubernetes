@@ -142,3 +142,14 @@ anonymous volumes : docker run -v/app/data used to save from the overwritten dat
 named volumes : docker run -v data:/app/data
 bind mount : docker run -v /path/to/code:/app/code
 
+
+Communication and network[^1].
+[^1]: Container to WWW communication through https request .
+[^2]: Container to Container Communication 
+[^3]: Container to Host Machine 
+
+
+##### Cross Communication in container 
+```javascript
+
+```
