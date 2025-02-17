@@ -143,7 +143,7 @@ named volumes : docker run -v data:/app/data
 bind mount : docker run -v /path/to/code:/app/code
 
 
-Communication and network[^1].
+Communication and network[^1]
 [^1]: Container to WWW communication through https request .
 [^2]: Container to Container Communication 
 [^3]: Container to Host Machine 
@@ -151,5 +151,18 @@ Communication and network[^1].
 
 ##### Cross Communication in container 
 ```javascript
+// to communicate with container and  add mongo container  and then run through ip address
+// docker run -d --name mongodb -p 27017:27017 mongo
+docker run -d --rm --network fav-network --name mongo_db mongo 
+docker container inspect $id
+docker run -p 3000:3000 -d  --rm --name mongo_db network:vol2
+
+// method 2 put all container in a network
+// both container should lie in the network 
+// created network use direct cotnainer name where you want to communicate container
+docker network create fav-network
+docker run -d --rm --network fav-network --name mongo_db mongo 
+docker run -p 3000:3000 -d --rm --network fav-network --name server_module fav:vols2
+
 
 ```
