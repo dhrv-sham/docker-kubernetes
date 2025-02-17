@@ -1,14 +1,14 @@
 ##### Colima 
 ```javascript
- colima start
- colima stop 
+colima start
+colima stop 
 ```
 
 ##### Docker Auth 
 ```javascript
- docker login 
- docker logout
- docker login -u $username
+docker login 
+docker logout
+docker login -u $username
 ```
 
 ##### Help 
@@ -40,7 +40,7 @@ docker build .
 
 ##### Running docker image with tag and container name
 ```javascript
- docker run  - d -p 3000:80 --rm --name $container-name imge-name:tag 
+docker run  - d -p 3000:80 --rm --name $container-name imge-name:tag 
 ```
 
 ##### Restart docker container : detached mode  
@@ -57,7 +57,7 @@ docker run $id
 
 ##### Build an docker pre-built image through docker hub 
 ```javascript
-dokcer run node
+docker run node
 ```
 
 ##### Build a interactive command shell through image 
@@ -78,8 +78,8 @@ docker ps (check running container)
 
 ##### To remove the container you need to stop first of all a container 
 ```javascript
- docker stop $name
- docker rm $name
+docker stop $name
+docker rm $name
 ```
 
 ##### To expose the local host and to connect with internal docekr host 
@@ -105,51 +105,51 @@ docker logs -f $container_id [attached mode]
 
 ##### Docker images all
 ```javascript
- docker images
+docker images
 ```
 
 ##### Remove docker images all ways remember to delete the docker container of that image should be deleted no matter running 
 ```javascript
- docker rmi [$id] 
- docker image prune (remove all the docker images )
+docker rmi [$id] 
+docker image prune (remove all the docker images )
 ```
 
 ##### Docker delete container auto when execution got over 
 ```javascript
- docker run -p 3000:80 --rm -d $image_id
+docker run -p 3000:80 --rm -d $image_id
 ```
 
 ##### Docker inspect image :
 ```javascript
- docker image inspect $id
+docker image inspect $id
 ```
 
 ##### Copy into container : 
 ```javascript
- docker cp dummy/. nice_hermann/test
- docker cp folder_name/. $name_conainer:/container_path 
+docker cp dummy/. nice_hermann/test
+docker cp folder_name/. $name_conainer:/container_path 
 ```
 
 #####  Copy from container :
 ```javascript
- docker cp  nice_hermann:/test/. dummy
+docker cp  nice_hermann:/test/. dummy
 ```
 
 ##### Rename and tagging container : 
 ```javascript
- docker run -p 4000:50  -d --name  $name $id
+docker run -p 4000:50  -d --name  $name $id
 ```
 
 ##### Rename and tagging image : 
 ```javascript
 // this v1 is usually used in docker file FROM server-side:v1s
- docker build -t server-side:v1 .
+docker build -t server-side:v1 .
 ```
 
 
 ##### To rename and retag an existing image:
 ```javascript
- docker tag server-side:v1 hrvsharma/server-side-hello-node:v2
+docker tag server-side:v1 hrvsharma/server-side-hello-node:v2
 ```
 
 ##### Sharing images and containers :
