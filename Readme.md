@@ -1,152 +1,201 @@
-colima :
+##### Colima 
+```javascript
 --> colima start
 --> colima stop 
+```
 
-
-docker auth : 
+##### Docker Auth 
+```javascript
 --> docker login 
 --> docker logout
 --> docker login -u $username
+```
 
-help :
+##### Help 
+```javascript
 -->docker run --help
 -->docker --help
 -->docker ps --help
 -->docker ps [options]
+```
 
-Docker version check : 
+##### Docker version check 
+```javascript
 -->docker --version
 -->docker -v
+```
 
-interactive session :  interactive mode plus terminal mode 
+##### Interactive session :  
+```javascript
+// interactive mode plus terminal mode 
 -->docker run -it $image_id
+```
 
-Docker build image : attached mode
+##### Docker build image : attached mode
+```javascript
 -->docker build -t python-idmb .
 -->docker build .
+```
 
 
-running docker image with tag and container name
+##### Running docker image with tag and container name
+```javascript
 -> docker run  - d -p 3000:80 --rm --name $container-name imge-name:tag 
+```
 
-
-restart docker container : detached mode  
+##### Restart docker container : detached mode  
+```javascript
 -->docker start $name
 -->docker start -a -i $container_name
+```
 
-run docker container :  build container 
+##### Run docker container :  build container 
+```javascript
 -->docker run python-idmb
 -->docker run $id
+```
 
-build an docker pre-built image through docker hub 
+##### Build an docker pre-built image through docker hub 
+```javascript
 -->dokcer run node
+```
 
-
-build a interactive command shell through image 
+##### Build a interactive command shell through image 
+```javascript
 -->docker run -it node
+```
 
-stop container : 
+##### Stop container : 
+```javascript
 -->docker stop $name
+```
 
-to check all containers : 
+##### To check all containers : 
+```javascript
 -->docker ps -a (all container)
 -->docker ps (check running container)
+```
 
-to remove the container you need to stop first of all a container 
+##### To remove the container you need to stop first of all a container 
+```javascript
 --> docker stop $name
 --> docker rm $name
+```
 
-
-to expose the local host and to connect with internal docekr host 
+##### To expose the local host and to connect with internal docekr host 
+```javascript
 -->docker run -p 3000:80  $image_id
+```
 
-to make the cotnainer in detached mode 
+##### To make the cotnainer in detached mode 
+```javascript
 -->docker run -p 3000:80 -d $image_id 
+```
 
-to add attached mode  the docker
+##### To add attached mode  the docker
+```javascript
 -->docker attach $conatiner_id
+```
 
-
-logs of the container : 
+##### Logs of the container : 
+```javascript
 -->docker logs $container_id  [detached mode]
 -->docker logs -f $container_id [attached mode]  
+```
 
-
-docker images all
+##### Docker images all
+```javascript
 --> docker images
+```
 
-
-remove docker images all ways remember to delete the docker container of that image should be deleted no matter running 
+##### Remove docker images all ways remember to delete the docker container of that image should be deleted no matter running 
+```javascript
 --> docker rmi [$id] 
 --> docker image prune (remove all the docker images )
+```
 
-
-docker delete container auto when execution got over 
+##### Docker delete container auto when execution got over 
+```javascript
 --> docker run -p 3000:80 --rm -d $image_id
+```
 
-
-docker inspect image :
+##### Docker inspect image :
+```javascript
 --> docker image inspect $id
+```
 
-
-copy into container : 
+##### Copy into container : 
+```javascript
 --> docker cp dummy/. nice_hermann/test
 --> docker cp folder_name/. $name_conainer:/container_path 
+```
 
-
-copy from container :
+#####  Copy from container :
+```javascript
 --> docker cp  nice_hermann:/test/. dummy
+```
 
-
-rename and tagging container : 
+##### Rename and tagging container : 
+```javascript
 --> docker run -p 4000:50  -d --name  $name $id
+```
 
-rename and tagging image : 
-***this v1 is usually used in docker file FROM server-side:v1s***
+##### Rename and tagging image : 
+```javascript
+// this v1 is usually used in docker file FROM server-side:v1s
 --> docker build -t server-side:v1 .
+```
 
 
-
-To rename and retag an existing image:
+##### To rename and retag an existing image:
+```javascript
 --> docker tag server-side:v1 hrvsharma/server-side-hello-node:v2
+```
 
 sharing images and containers :
-***Everyone who has images can run containers***
-***Either share docker file or image to run ***
-<!-- docker hub and private registry -->
--->docker push dhrvsharma/server-side-hello-node:v2
+```javascript
+// Everyone who has images can run containers
+// Either share docker file or image to run 
+// <!-- docker hub and private registry -->
+-->docker tag 9d4d34967b05 dhrvsharma/kub-first-app:v1
+-->docker push dhrvsharma/kub-first-app:v1
 -->docker pull $name
+```
 
-
-docker using the named volumes : 
-<!-- The -v feedback:/app/feedback option is used to create a named volume called feedback and mount it to the /app/feedback directory inside the container. -->
+##### Docker using the named volumes : 
+```javascript
+// <!-- The -v feedback:/app/feedback option is used to create a named volume called feedback and mount it to the /app/feedback directory inside the container. -->
 -> docker run -p 3000:80 -d --name  $name -v :$dir $image-name:tag
-<!--docker run -p 3000:80 -d --name  feedback-app -v feedback:/app/feedback feedback-node:vol  -->
+// <!--docker run -p 3000:80 -d --name  feedback-app -v feedback:/app/feedback feedback-node:vol  -->
+```
 
 
-
-bind mounts auto updates the container when changes are done in the hard code : 
-<!-- binding our current directory into the /app -->
+#####  Bind mounts auto updates the container when changes are done in the hard code : 
+```javascript
+// <!-- binding our current directory into the /app -->
 -> docker run -d -p 3000:80 --rm --name feedback-app -v feedback:/app/feedback -v "/Users/dhruv/Desktop/docker/data-volumes-01-starting-setup/":/app feedback-node:vol
-
-
-<!-- this will works as /app is overwritten by host local files trhough volumes that we create an anonymous volume   -->
-<!-- backend changes are relfected by nodemon in container  -->
+// <!-- this will works as /app is overwritten by host local files trhough volumes that we create an anonymous volume   -->
+// <!-- backend changes are relfected by nodemon in container  -->
 ->docker run -d -p 3000:80 --name feedback-app -v feedback:/app/feedback -v "/Users/dhruv/Desktop/docker/data-volumes-01-starting-setup":/app -v /app/node_modules feedback-node:vol 
-<!-- short cut for the path -->
+// <!-- short cut for the path -->
 macOS / Linux: -v $(pwd):/app
-
+```
 
 <!-- docker volumes  -->
-anonymous volumes : docker run -v/app/data used to save from the overwritten data
-named volumes : docker run -v data:/app/data
-bind mount : docker run -v /path/to/code:/app/code
+### Anonymous volumes : docker run -v/app/data used to save from the overwritten data
+##### Named volumes :
+```javascript 
+->docker run -v data:/app/data
+```
+##### Bind mount : 
+```javascript
+->docker run -v /path/to/code:/app/code
+```
 
-
-Communication and network[^1]
-[^1]: Container to WWW communication through https request .
-[^2]: Container to Container Communication 
-[^3]: Container to Host Machine 
+##### Communication and network
+* Container to WWW communication through https request .
+* Container to Container Communication 
+* Container to Host Machine 
 
 
 ##### Cross Communication in container 
@@ -163,6 +212,66 @@ docker run -p 3000:3000 -d  --rm --name mongo_db network:vol2
 docker network create fav-network
 docker run -d --rm --network fav-network --name mongo_db mongo 
 docker run -p 3000:3000 -d --rm --network fav-network --name server_module fav:vols2
+```
 
 
+## Kubernetes
+##### Installatation tools minikube virtualbox and kubectel
+```javascript
+brew install minikube
+// start with the cluster
+minikube start
+minikube status
+// to get the display of the cluster 
+minikube dashboard
+```
+
+#### Kubernetes deals with the object 
+Multiple objects are there like pod deployments services and volkume 
+#### Pod Object 
+* Smallest unit kubernetes interacts with 
+* Run multiple containers on the same pod
+* Pods contain shared resources like volumes for all pod cotnainers 
+* Pods had a cluster internal ip address by default 
+* Pods are ephemeral menas if pods deleted or replaced the data will be lost 
+* Kubernetes manage the pods 
+#### Deployment Object 
+* Controls multiple pods you set a desrireed state , kubernetes then changes the actal state hence deployments can be paused deleted and rolled back , deployments can be scaled up , deployments manage the pods for you and you can create multiple deployments , you never directly interact with the pods instead deployment do it for you
+#### Service Object 
+* Exposes pods to the cluster or externally 
+* Pods have an internal ip which can be changed when pods are replaced 
+* Service group pods with a shared ip
+* Services can allow external access to pods 
+* services are used to reach pods external cluster
+
+
+## Kubernetes commands 
+###### Kubectl deployments command
+```javascript
+kubectl help
+// create new deployments
+// kubectl create deployment $depl_name --image=imagd _name_of_the_container
+kubectl create deployment first-app --image=dhrvsharma/kub-first-app:v1
+// deployment ready / number of deployment
+kubectl get deployments
+// current/target
+kubectl get pods
+// deployment will never going to work as container is stored as in other local environment and kubectl is accessing through virtual machine 
+kubectl delete pods $name
+kubectl delete deployments $name
+```
+
+##### kubectl service commands
+
+```javascript
+// two type of ports are there cluster ip and node port 
+kubectl create service $type $name --tcp=port:$exposePort
+// expose ports 
+kubectl expose deployment sixth-app --type=ClusterIp  --port=8080
+kubectl expose deployment sixth-app --type=NodePort  --port=8080
+kubectl expose deployment sixth-app --type=LoadBalancer  --port=8080
+// get services
+kubectl get services
+// exposing to the local machine 
+minikube service first-app
 ```
