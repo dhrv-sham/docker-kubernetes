@@ -149,7 +149,7 @@ docker build -t server-side:v1 .
 
 ##### To rename and retag an existing image:
 ```javascript
-docker tag server-side:v1 hrvsharma/server-side-hello-node:v2
+docker tag server-side:v1 dhrvsharma/server-side-hello-node:v2
 ```
 
 ##### Sharing images and containers :
@@ -169,6 +169,14 @@ docker run -p 3000:80 -d --name  $name -v :$dir $image-name:tag
 // docker run -p 3000:80 -d --name  feedback-app -v feedback:/app/feedback feedback-node:vol  
 ```
 
+##### Remove All Docker volumes
+```js
+// list all volumes
+docker volume ls
+// remove all unused volumes
+docker volume rm $(docker volume ls -qf dangling=true)
+```
+
 
 #####  Bind mounts auto updates the container when changes are done in the hard code : 
 ```javascript
@@ -182,7 +190,10 @@ docker run -d -p 3000:80 --name feedback-app -v feedback:/app/feedback -v "/User
 ```
 
 ##### Docker volumes  
-### Anonymous volumes : docker run -v/app/data used to save from the overwritten data
+### Anonymous volumes : 
+```javascript 
+docker run -v/app/data used to save from the overwritten data
+```
 ##### Named volumes :
 ```javascript 
 docker run -v data:/app/data
@@ -212,6 +223,105 @@ docker run -p 3000:3000 -d  --rm --name mongo_db network:vol2
 docker network create fav-network
 docker run -d --rm --network fav-network --name mongo_db mongo 
 docker run -p 3000:3000 -d --rm --network fav-network --name server_module fav:vols2
+docker network ls
+```
+
+
+
+## Docker Multiple Container 
+##### Local Host Mannual Connection
+* Node js and React Application is created
+* Setting Up a Project with Database -> Backend -> FrontEnd
+* Database must persist and access should be limited
+* Live source Code Updates
+* Connect with Local Host Machine
+* Frontend [3000] <-> Backend [80] <-> mongoDb [27017]
+```js
+// Connection With The Local host Machine
+// First With The Database 
+// expose the mongo container to a port 27017
+docker run --name $name --rm -d -p 27017:27017  mongo
+// created a backend container 
+// Need to build a docker file 
+docker build -t $img_name:v .
+// connection through local host 
+// 'mongodb://host.docker.internal:27017/course-goals', -> make connection 
+docker run --name cont_name --rm $img_name:v
+// port expose of backend for frontennd to 80
+docker run --name goals-backend --rm -d -p 80:80 go
+al_node:v2
+// created a frontend container
+// created a frontend Docker React File
+docker build -t $img_name:v .
+// expose front end port 3000
+docker run --name $cont_name --rm -d -p 3000:30
+00 img_name:v
+```
+
+##### Creating a Network for application
+```js
+// list all network
+docker network ls
+// create new network
+docker network create $net-name
+// add mongo container to network
+docker run --name mongodb --rm -d --network $net-name mongo
+// add backend container to network
+// add the name of the mongodb image
+// 'mongodb://mongodb:27017/course-goals' -> mongodb is the name of container
+docker build -t  goal_node:v3 .
+docker run --name 
+docker run --name goals-backend --rm -d --network $net-name goal_node:v3
+// frontend container
+// 'http://goals-backend/goals/' -> replace the local host with back-end conainer name
+docker run -d --rm -p 3000:3000 --name goal_fronte
+nd --network $net-name goal_react:v2
+```
+
+##### React Issue
+```js
+// react is browser side rendereing so it cant use container name 
+// so we need to expose or frontend container ports and backend container ports
+// we dont need to expose mongo ports as it is interacted with the backend only 
+// add only backend and mongo to network
+docker build -t goal_react:v3 .
+docker run -d --rm -p 80:80 --name goal-backend --network goals-net goal_node:v3
+docker run -d --rm -p 3000:3000 --name goal-frontend  goal_react:v3
+```
+
+##### Data Persistency with Mongo Db even after container deleted data remains
+```js
+// -v own_directory:/data/db
+docker run -d --name mongodb -v  data:/data/db --rm -d --network goals-net mongo
+
+//named volume
+docker run -d --rm -p 80:80 --name goal-backend -v logs:/app/logs --network goals-net goal_node:v3
+// longer path overwrites the shorter path 
+// for auto update container we used bind mount the first version then for logs we used named volumes and then for not overwritting we use naonymours volume
+docker run -d --rm -p 80:80 -v /Users/dhruv/Desktop/docker/multi-01-starting-setup/backend:/app -v logs:/app/logs  -v /app/node_modules   --name goal-backend --network full-network goal_node:v3
+docker run  --rm -d -v /Users/dhruv/Desktop/docker/multi-01-starting-setup/frontend/src/:/app/src -p 3000:3000  --name goals-frontend goal-react:vr
+```
+
+
+
+
+### Docker Compose
+* Automating Multi-Container setups
+* One Configuration File Required 
+* Services refers to containers only
+* Always create .yaml or .yml file
+* Terminal should be accessed through same directory
+```js
+// start the compose file 
+// add container
+docker-compose up
+docker-compose up -d // start with the de-attached mode
+docker-compose down // remove container only
+docker-compose down -v // remove the volume and container
+
+docker-compose up -help
+docker-compose build // force build images not run
+
 ```
 
 
@@ -225,6 +335,9 @@ minikube status
 // to get the display of the cluster 
 minikube dashboard
 ```
+
+
+
 
 #### Kubernetes deals with the object 
 Multiple objects are there like pod deployments services and volkume 
@@ -273,5 +386,46 @@ kubectl expose deployment sixth-app --type=LoadBalancer  --port=8080
 // get services
 kubectl get services
 // exposing to the local machine 
-minikube service first-app
+minikube service $name
+```
+
+##### kubectl scale commands
+```js
+// if you scale down pods will automatically get terminated 
+kubectl scale deployments/$name_of_pod --replicas=$number
+```
+
+##### Rebuild deployments
+```js
+// version tags are comoulsory to give 
+docker build -t dhrvsharma/kub-first-app:v2 .
+docker push dhrvsharma/kub-first-app:v2
+// kubectl set image deployment/sixth-app kub-first-app=dhrvsharma/kub-first-app
+kubectl set image deployment/$name_depl $container_name=$image_name:tag
+
+```
+
+##### Rollout deployments
+```js
+kubectl rollout status deployment/$name
+kubectl rollout undo deploment/$name
+// returns multiple revision 
+kubectl rollout history deployment/$name
+// tells the history of particular version through revision
+kubectl rollout history deployment/$dep_name --revision=$rev_num
+// rollback to particular version through revision
+kubectl rollout undo deployment/$dep_name --to-revision=$rev_num
+```
+
+
+##### Delete through Kubectl
+```js
+kubectl delete services  $serv_name
+kubectl delete deployments $dep_naem
+```
+
+
+##### Declarative approach of kubernetes
+```js
+
 ```

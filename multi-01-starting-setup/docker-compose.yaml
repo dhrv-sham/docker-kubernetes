@@ -1,0 +1,68 @@
+# version: "3.8"
+# automatically -rm -d 
+# no need to add in a network as all  compose file auto matciall put all services in the same network
+# services names are used for cross communication
+services:
+  # two blanks always  
+  # spaces children of services  refers to the containers
+  mongodb:
+    # configuring specfic container
+    # same image as docker run 
+    # dettatched and removed are default
+    # environment:
+        #Single Values 
+    #   - MONGO_INITDB_ROOT_USERNAME=max
+    #   - MONGO_INITDB_ROOT_PASSWORD=secret
+        #Multi Value
+        # MONGO_INITDB_ROOT_USERNAME: max
+    # env_file:
+    #   - ./env/mongo.env
+    # networks:
+    #   - goals-net
+    image: 'mongo'
+    # gives the name to container
+    container_name: mongodb
+    volumes:
+      # option like read  
+      # data:/data/db:[option]
+      - data:/data/db
+  backend:
+    # you can manully create image and tag that here or build image as well
+    build: ./backend
+    # image : 'goals_react'
+    # realtive path
+    # or
+    # build: 
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    ports:
+    # 'local_port : internal_port'
+      - '80:80'
+    volumes:
+      - logs:/app/logs  
+      - ./backend:/app
+      - /app/node_modules
+    # used for adding dependency after after mongodb started it will run
+    depends_on:
+      - mongodb
+    
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+      
+
+
+# named volumes must be added there
+# anonympous volumes no need to be added here
+# services defined with same volumes shares same data
+volumes:
+  data:
+  logs:
+
+
+
