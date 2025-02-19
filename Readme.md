@@ -297,9 +297,9 @@ docker run -d --name mongodb -v  data:/data/db --rm -d --network goals-net mongo
 //named volume
 docker run -d --rm -p 80:80 --name goal-backend -v logs:/app/logs --network goals-net goal_node:v3
 // longer path overwrites the shorter path 
-// for auto update container we used bind mount the first version then for logs we used named volumes and then for not overwritting we use naonymours volume
-docker run -d --rm -p 80:80 -v /Users/dhruv/Desktop/docker/multi-01-starting-setup/backend:/app -v /logs/access.logs:/app/logs/access.logs -v /app/node_modules   --name goal-backend --network full-network goal_node:v3 
-docker run  --rm -d -v /Users/dhruv/Desktop/docker/multi-01-starting-setup/frontend/src/:/app/src -p 3000:3000  --name goals-frontend goal-react:vr
+// for auto update container we used bind mount the first version then for logs we used named volumes and then for not overwritting we use anonymous volume
+docker run -d --rm -p 80:80 -v /Users/dhruv/Desktop/docker/multi-01-starting-setup/backend:/app -v /logs:/app/logs/access.logs -v /app/node_modules   --name goal-backend --network full-network goal_node:v3 
+docker run  --rm -d -v /Users/dhruv/Desktop/docker/multi-01-starting-setup/frontend/src/:/app/src -p 3000:3000  --name goals-frontend goal_react:v3
 ```
 
 
