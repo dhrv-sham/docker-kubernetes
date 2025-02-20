@@ -1,0 +1,16 @@
+# only works on single node testing 
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity: 
+    storage: 1Gi
+  # refers to the storage system means Block and Fiel syystem 
+  volumeMode: Filesystem
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate

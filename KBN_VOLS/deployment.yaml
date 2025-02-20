@@ -1,0 +1,37 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: story  
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+        - name: story
+          image: dhrvsharma/kbn_vols-stories:vol2
+          env:
+            - name: STORY_FOLDER
+              # value: 'story'
+              valueFrom: 
+                configMapKeyRef: 
+                  name: data-store-env
+                  key: folder
+          volumeMounts:
+            - mountPath: /app/story
+              name: story-volume   
+      # this volume is attached to  specific cotainer of specific pods 
+      # replica pods cant access the volume 
+      # if request reached to different pod then data get lost 
+      volumes:
+        - name: story-volume
+          persistentVolumeClaim:
+            claimName: host-pvc
+
+
+             

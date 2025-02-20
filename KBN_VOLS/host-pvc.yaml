@@ -1,0 +1,17 @@
+# claim file includes how the nodes access the persisitent volumes
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: host-pvc
+spec:
+  # specs related to pods
+  volumeName: host-pv
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard  
+  resources:
+    requests:
+      #a pod can  request 1Gi
+      storage:  1Gi
+
+          

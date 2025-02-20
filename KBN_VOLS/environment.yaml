@@ -1,0 +1,9 @@
+# environment yaml file
+apiVersion: v1
+kind: ConfigMap
+metaData:
+  name: data-store-env
+data:
+  # key: value
+  folder: 'story'
+    

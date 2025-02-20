@@ -440,41 +440,41 @@ kubectl delete -f=service.yaml
 
 
 ##### Declarative File deployment
-```js
-//  any changes in the yaml file can be reflected back after apply it again through cli
-//  labels  are use generated key - value pairs
+```yaml
+# any changes in the yaml file can be reflected back after apply it again through cli
+# labels  are use generated key - value pairs
 apiVersion: apps/v1
-// type of object want to create Depolyment , Services
+# type of object want to create Depolyment , Services
 kind: Deployment
-//  add name and specs of container
+# add name and specs of container / pods  / images
 metadata:
   name: second-app-deployment
   labels:
     group: example 
-// spceification of deployment 
+# spceification of deployment 
 spec:
-//    set the number of pods you requrie in deployment
+#   set the number of pods you requrie in deployment
   replicas: 1
-//    Look over the pods with the metnion specific labels
+# Look over the pods with the metnion specific labels
   selector:
     matchLabels:
       app: second-app
       tier: backend
-//   which image should be used for pods creation
-//   no need to add  kind of template spec it is always pod
+#    which image should be used for pods creation
+#    no need to add  kind of template spec it is always pod
   template:
     metadata:
       labels:
         app: second-app
         tier: backend
     spec:
-    //  add spec of pod
+    # add spec of pod
       containers:
         - name: second-node
           image: dhrvsharma/kub-first-app:latest
-        //    Always pull the latest images despite version of the particular image is metnion
+          # Always pull the latest images despite version of the particular image is metnion
           imagePullPolicy: Always
-        //   check wheather the container is running by pod or not 
+          # check wheather the container is running by pod or not 
           livenessProbe:
             httpGet:
               path: /
@@ -484,7 +484,7 @@ spec:
 ```
 
 ##### Declarative Services deployment
-```js
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -502,8 +502,8 @@ spec:
 ```
 
 ##### Declarative Master-Deployment
-```js
-//  service object creation
+```yaml
+# service object creation
 apiVersion: v1
 kind: Service
 metadata:
@@ -517,7 +517,7 @@ spec:
       targetPort: 8080
   type: LoadBalancer    
 ---
-//  new deployment object creation
+# new deployment object creation
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -528,8 +528,8 @@ spec:
     matchLabels:
       app: second-app
       tier: backend
-    //  matchExpressions:
-    //  - { key: value, operator: In, values: [second-app] }
+    #  matchExpressions:
+    #   - { key: value, operator: In, values: [second-app] }
   template:
     metadata:
       labels:
@@ -552,4 +552,133 @@ kubectl apply -f=deployments.yaml -f=service.yaml
 kubectl delete -f=deployments.yaml -f=service.yaml
 kubectl apply -f=master-delployment.yaml
 kubectl delete -f=master-delployment.yaml
+```
+
+##### Ip resolutions
+```js
+kubectl get svc story-service
+minikube service story-service --url
+```
+
+##### Management OF Volumes Through Kubernets
+* Persistent Volumes and Restart Container Survives
+* Pods contains container and services 
+* Pods are isolated 
+* Volumes are destoryed when a Pod is removed
+* Types of Volumes 
+* -> EmptyDir : multiple pods access different data
+* -> HostPath : multiple pods access same data
+* -> CSI : container storage interface allows third party interaction with  kubernetes strage
+* -> Pod and Node independent Volumes are requried called Persistent Volumes data stored out of pods 
+* -> Persistent volume are just detached from the pods 
+* -> Volumes are stored in cloud inspect of Pods
+```yaml
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: story  
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      
+      containers:
+        - name: story
+          image: dhrvsharma/kbn_vols-stories:vol2
+          env:
+            - name: STORY_FOLDER
+              value: 'story'
+          volumeMounts:
+            - mountPath: /app/story
+              name: story-volume   
+    # this volume is attached to  specific cotainer of specific pods 
+    # replica pods cant access the volume 
+    # if request reached to different pod then data get lost 
+      volumes:
+        - name: story-volume
+          hostPath:
+            path: /data 
+            type: DirectoryOrCreate
+        # emptyDir: {}    
+```
+##### Access Nodes
+* We have Multiple Acess Nodes  means how you claim 
+* -> ReadWriteOnce  means read and write persistent volumes only by one node
+* -> ReadOnlyMany means read persistent volumes only by multiple nodes not for host host and path as 
+* -> Hostpath path only supports one node system
+* -> ReadWriteMany means read and write persistent volumes by multpele node
+* -> Storage Class ->  how storage are managed and volumes configured for us local host default by vm miniKube
+
+### Persistent Volumes
+```js
+kubectl apply -f=host-pv.yaml
+kubectl apply -f=host-pvc.yaml
+kubectl get pv
+kubectl get pvc
+kubectl delete -f=host-pv.yaml
+```
+#### host-pv.yaml
+```yaml
+# only works on single node testing 
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity: 
+    storage: 1Gi
+  # refers to the storage system means Block and Fiel syystem 
+  volumeMode: Filesystem
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+```
+#### host-pvc.yaml
+```yaml
+# claim file includes how the nodes access the persisitent volumes
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: host-pvc
+spec:
+  # specs related to pods
+  volumeName: host-pv
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard  
+  resources:
+    requests:
+      #a pod can  request 1Gi
+      storage:  1Gi
+```
+##### environment.yaml
+* need to bind with ontainer where you want to add basically in deployment.yaml
+```yaml
+env:
+  - name: STORY_FOLDER
+    # value: 'story'
+    valueFrom: 
+      configMapKeyRef: 
+        name: data-store-env
+        key: folder
+```
+* Envirmonment Yaml File
+```yaml
+# environment yaml file
+apiVersion: v1
+kind: ConfigMap
+metaData:
+  name: data-store-env
+data:
+  # key: value
+  folder: 'story'
 ```
