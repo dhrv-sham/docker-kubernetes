@@ -1,0 +1,42 @@
+# any changes in the yaml file can be reflected back after apply it again through cli
+# labels  are use generated key - value pairs
+apiVersion: apps/v1
+# type of object want to create Depolyment , Services
+kind: Deployment
+# add name and specs of container
+metadata:
+  name: second-app-deployment
+  labels:
+    group: example 
+# spceification of deployment 
+spec:
+  # set the number of pods you requrie in deployment
+  replicas: 1
+  # Look over the pods with the metnion specific labels
+  selector:
+    matchLabels:
+      app: second-app
+      tier: backend
+  # which image should be used for pods creation
+  # no need to add  kind of template spec it is always pod
+  template:
+    metadata:
+      labels:
+        app: second-app
+        tier: backend
+    spec:
+    # add spec of pod
+      containers:
+        - name: second-node
+          image: dhrvsharma/kub-first-app:latest
+          # Always pull the latest images despite version of the particular image is metnion
+          imagePullPolicy: Always
+          # check wheather the container is running by pod or not 
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 3
+            initialDelaySeconds: 5  
+
+           

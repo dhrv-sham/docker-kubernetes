@@ -421,11 +421,135 @@ kubectl rollout undo deployment/$dep_name --to-revision=$rev_num
 ##### Delete through Kubectl
 ```js
 kubectl delete services  $serv_name
-kubectl delete deployments $dep_naem
+kubectl delete deployments $dep_name
 ```
 
 
 ##### Declarative approach of kubernetes
 ```js
+// Resouce defination file
+// Deployment Creation File 
+kubectl apply -f=deployment.yaml
+// Deployment delete file
+kubectl delete -f=deployment.yaml
+// Service creation File
+kubectl apply -f  service.yaml
+// Service deletion File
+kubectl delete -f=service.yaml
+```
 
+
+##### Declarative File deployment
+```js
+//  any changes in the yaml file can be reflected back after apply it again through cli
+//  labels  are use generated key - value pairs
+apiVersion: apps/v1
+// type of object want to create Depolyment , Services
+kind: Deployment
+//  add name and specs of container
+metadata:
+  name: second-app-deployment
+  labels:
+    group: example 
+// spceification of deployment 
+spec:
+//    set the number of pods you requrie in deployment
+  replicas: 1
+//    Look over the pods with the metnion specific labels
+  selector:
+    matchLabels:
+      app: second-app
+      tier: backend
+//   which image should be used for pods creation
+//   no need to add  kind of template spec it is always pod
+  template:
+    metadata:
+      labels:
+        app: second-app
+        tier: backend
+    spec:
+    //  add spec of pod
+      containers:
+        - name: second-node
+          image: dhrvsharma/kub-first-app:latest
+        //    Always pull the latest images despite version of the particular image is metnion
+          imagePullPolicy: Always
+        //   check wheather the container is running by pod or not 
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 3
+            initialDelaySeconds: 5  
+```
+
+##### Declarative Services deployment
+```js
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels: 
+    group: example
+spec:
+  selector: 
+    app: second-app
+  ports:
+    - protocol:  'TCP'
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer      
+```
+
+##### Declarative Master-Deployment
+```js
+//  service object creation
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector: 
+    app: second-app
+  ports:
+    - protocol:  'TCP'
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer    
+---
+//  new deployment object creation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: second-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: second-app
+      tier: backend
+    //  matchExpressions:
+    //  - { key: value, operator: In, values: [second-app] }
+  template:
+    metadata:
+      labels:
+        app: second-app
+        tier: backend
+    spec:
+      containers:
+        - name: second-node
+          image: dhrvsharma/kub-first-app:latest 
+```
+##### Delete By Selectors
+```js
+// key value refers to the labels we have used for eg group: example
+kubectl delete $yaml_files,$yaml_files -l key=value
+```
+
+##### Multiple resource File
+```js
+kubectl apply -f=deployments.yaml -f=service.yaml
+kubectl delete -f=deployments.yaml -f=service.yaml
+kubectl apply -f=master-delployment.yaml
+kubectl delete -f=master-delployment.yaml
 ```
