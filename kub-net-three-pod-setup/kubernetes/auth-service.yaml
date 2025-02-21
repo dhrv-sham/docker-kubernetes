@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth 
+  type: ClusterIP # only pods in a cluster can acces the ip of the pods
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80 

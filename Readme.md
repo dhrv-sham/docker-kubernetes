@@ -270,7 +270,6 @@ docker run --name mongodb --rm -d --network $net-name mongo
 // add the name of the mongodb image
 // 'mongodb://mongodb:27017/course-goals' -> mongodb is the name of container
 docker build -t  goal_node:v3 .
-docker run --name 
 docker run --name goals-backend --rm -d --network $net-name goal_node:v3
 // frontend container
 // 'http://goals-backend/goals/' -> replace the local host with back-end conainer name
@@ -556,8 +555,8 @@ kubectl delete -f=master-delployment.yaml
 
 ##### Ip resolutions
 ```js
-kubectl get svc story-service
-minikube service story-service --url
+kubectl get svc $service_name
+minikube service $service_name --url
 ```
 
 ##### Management OF Volumes Through Kubernets
@@ -661,7 +660,7 @@ spec:
       storage:  1Gi
 ```
 ##### environment.yaml
-* need to bind with ontainer where you want to add basically in deployment.yaml
+* Need to bind with container where you want to add basically in deployment.yaml
 ```yaml
 env:
   - name: STORY_FOLDER
@@ -682,3 +681,92 @@ data:
   # key: value
   folder: 'story'
 ```
+
+
+### Kubernetes And Networking
+* Pod Internal Communication 
+* Pod To Pod Communication
+* CloudPort By Default ip addresses of cluster within it self
+* Node Port can reach outside world but uses address of Node
+* Port -> outside world
+* TargetPort -> inside pods / containers 
+* Where as auth container ping on port 80 hence it is not exposed externally 
+* Container inside a single pods communicate through the local host
+
+### Container to Container Communication Under the Same cluster
+* Two Container can communicate through local host under same cluster
+
+```yaml
+containers:
+  - name: users
+    image: dhrvsharma/kub-demo-users:v4
+    env:
+      # this is how containers of same pods communicate to each other 
+      - name: AUTH_ADDRESS
+        value: localhost
+  - name: auth
+    image: dhrvsharma/auth-api:v1
+```
+
+```js
+const response = await axios.get(`http://${process.env.AUTH_ADDRESS}/token/` + hashedPassword + '/' + password);
+```
+
+### Pod To Pod Communication under Different Clusters
+* Can be done by two ways mannualy adding pods ip to wholm you connect in services 
+* Though ClusterIp pods remains can be used inside the cluster
+```yaml
+env:
+    # this is how containers of same pods communicate to each other 
+      - name: AUTH_ADDRESS
+        # go through the ip address of the services by cmd get services
+        value: "10.97.106.227"
+```
+* Another way is through the gloabal environment varaible and then mention in the link 
+```js
+// process.env.${name_of_service(caps)}_SERVICE_HOST
+const hashedPW = await axios.get(`http://${process.env.AUTH_SERVICE_SERVICE_HOST}/hashed-password/` + password);
+```
+###### Reading Information about pods and containers
+```js
+// this ready refers to the container of pod
+// dhruv@COMLAP4230 kubernetes % kubectl get pods
+// NAME                                READY   STATUS        RESTARTS   AGE
+// users-deployment-5c6b76b55c-zvsl6   2/2     Running       0          24s
+// users-deployment-74d78f59f9-8rh9j   1/1     Terminating   0          78m
+```
+
+##### Kubernetes with DNS stuff 
+* Kubernetes by itself supports DNS 
+* just have to mention the dns domain use it directly 
+* then use it directly
+
+```yaml
+env:
+    # this is how containers of same pods communicate to each other 
+    - name: AUTH_ADDRESS
+      # go through the ip address of the services by cmd get services
+      # value: "10.97.106.227"
+      # "service-name.namespace"
+      value: "auth-service.default"
+```
+
+```js
+kubectl get namespaces
+const response = await axios.get(`http://${process.env.AUTH_ADDRESS}/token/` + hashedPassword + '/' + password);
+```
+
+
+##### Connect Through NGix server 
+* auth run ClusterIp :80 user was exposed on LoadBalancer: 8080 task was exposed on LoadBalancer : 8000 frontend was exposed on LoadBalancer : 80
+* Make the frontend deployment and services similar to other  under the same cluster
+* Add ngix route to handle the dns as react is client side rendering side 
+* fetch fetch on /api/tasks 
+```js
+  //  ngix file api route
+  location /api/ {
+    proxy_pass http://tasks-service.default:8000/;
+  }
+```
+
+

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users  
+    spec:
+      containers:
+        - name: users
+          image: dhrvsharma/kub-demo-users:threeV2
+          env:
+          # this is how containers of same pods communicate to each other 
+            - name: AUTH_ADDRESS
+              # go through the ip address of the services by cmd get services
+              # value: "10.97.106.227"
+              # "service-name.namespace" which you want to access 
+              value: "auth-service.default"

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+spec:
+  selector:
+    app: users # refers to the container name which we have mention in the pod template 
+  #  NodePort is default
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080 # where as auth container ping on port 80 hence it is not exposed externally because we have not mentioned to ports 
